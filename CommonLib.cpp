@@ -101,28 +101,31 @@ bool CreateAccount() {
 		}
 	}
 	else {
-		cout << "Failed to open Accounts file!" << endl;
+		cout << "Failed to open Accounts file to ckeck!" << endl;
 		return false;
 	}
 		AccountInfor.close();
-		AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION, ios::out | ios::in | ios::app);
+
 		//If not, create new account
+		AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION, ios::out | ios::in | ios::app);
 		if (AccountInfor.is_open()) {
 			string code = encrypt(ID + " " + password, ENCRYPT_KEY);
 			AccountInfor << code << endl;
 			AccountInfor.close();
 			User user(ID);
 			user.CreateNewUserFolder();
+			user.SaveData();
 			return true;
 		}
 		else {
-			cout << "Failed to open Accounts file!" << endl;
+			cout << "Failed to open Accounts file to write!" << endl;
 			return false;
 		}
 }
 
 User LoadUserData(string ID) {
 	User myAccount(ID);
+	myAccount.LoadData();
 	return myAccount;
 }
 
@@ -138,7 +141,7 @@ bool LoginMenu(string &ID) {
 	while (!isLogin) {
 		system("cls");
 		int n;
-		cout << "Choose action :\n1.Login\n2.Sign in\n3.Exit\nYour option: ";
+		cout << "Choose action :\n1.Login\n2.Sign up\n3.Exit\nYour option: ";
 		cin >> n;
 		switch (n)
 		{
@@ -196,6 +199,7 @@ void UserMenu(string ID) {
 		case 2:
 			break;
 		case 3:
+			user.SaveData();
 			return;
 		default:
 			break;
