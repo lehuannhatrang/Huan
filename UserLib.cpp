@@ -53,7 +53,8 @@ bool User::Submit() {
 		cout << "Nhap duong dan toi file "<< i+1 << ": ";
 		getline(cin >> ws, direct[i]);
 	}
-	if (ComplineAndRun(direct, ID,SubmitCount)) {
+	Submission submit(ID);
+	if (submit.ComplineAndRun(direct,SubmitCount)) {
 		cout << "Success!!" << endl;
 		SubmitCount++;
 		return 1;
@@ -62,4 +63,12 @@ bool User::Submit() {
 		cout << "false" << endl;
 		return 0;
 	}
+}
+
+bool User::LoadData(){
+	return true;
+}
+
+bool User::SaveData(){
+	return true;
 }

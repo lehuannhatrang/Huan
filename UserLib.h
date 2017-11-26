@@ -1,5 +1,5 @@
 #pragma once
-#include"AutoComplineLib.h"
+#include"SubmissionLib.h"
 #include"tinyxml.h"
 class User {
 private:
@@ -11,4 +11,6 @@ public:
 	void set_ID(string ID);
 	bool Submit();
 	bool CreateNewUserFolder();
+	bool LoadData();
+	bool SaveData();
 };
