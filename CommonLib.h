@@ -19,3 +19,4 @@ User LoadUserData(string ID);
 bool CheckID(string ID);
 AVLTree<User>* LoadAllData();
 bool CheckNumber(string str);
+bool FindingUser();

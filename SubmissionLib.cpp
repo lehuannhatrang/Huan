@@ -137,7 +137,6 @@ bool Submission::LoadData(int a) {
 
 	// Convert string to char*, which can be used to load data using tinyxml library
 	const char* ok = XMLPath.c_str();
-	cout << XMLPath << endl;
 	TiXmlDocument doc(ok);
 	if (!doc.LoadFile(ok)) {
 		throw  "Loading failed. Try again...\n";
@@ -250,7 +249,7 @@ bool Submission::SaveData(int pos) {
 }
 
 void Submission::Print() {
-	cout << pos << "." << endl;
+	cout <<"Lan " << pos << "." << endl;
 	cout << "Diem : " << score <<endl;
 	cout << "Thoi gian nop: " <<Time_Submission.tm_hour << ":";
 	cout << Time_Submission.tm_min << ":";

@@ -171,3 +171,20 @@ AVLTree<User>* LoadAllData() {
 	
 	return root;
 }
+
+bool FindingUser() {
+	AVLTree<User> *data = LoadAllData();
+	while (true) {
+		string ID;
+		cout << "\nMSSV : ";
+		getline(cin >> ws, ID);
+		if (!CheckNumber(ID)||ID=="3") return 0;
+		node<User> *user=new node<User>();
+		if (!data->AVLSearch(user, stoi(ID, nullptr))) {
+			cout << "Not Found!!" << endl;
+			continue;
+		}
+		user->data.PrintScores();
+	}
+
+}

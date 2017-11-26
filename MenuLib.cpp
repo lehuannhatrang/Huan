@@ -51,6 +51,7 @@ void AdminMenu() {
 		case 1:
 			break;
 		case 2:
+			FindingUser();
 			break;
 		case 3:
 			return;
@@ -82,7 +83,6 @@ void UserMenu(string ID) {
 			system("pause");
 			break;
 		case 3:
-			user.SaveData();
 			return;
 		default:
 			break;

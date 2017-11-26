@@ -11,6 +11,7 @@ public:
 	node<Type> *left;
 	node<Type> *right;
 	Balance_factor balance;
+	node(){}
 	node(Type x,int key) {
 		data = x;
 		this->key = key;
@@ -283,6 +284,14 @@ public:
 		return root;
 	}
 
-
+	 bool AVLSearch(node<Type>* &node,int key) {
+		node = root;
+		while (node != NULL) {
+			if (key < node->key) node = node->left;
+			else if (key > node->key) node = node->right;
+			else if (key == node->key) return 1;
+		}
+		return 0;
+	}
 };
 
