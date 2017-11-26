@@ -64,9 +64,9 @@ bool User::Submit() {
 	
 	if (submit.ComplineAndRun(direct,SubmitCount)) {
 		submissionsList->addSubmit(submit);
-		SubmitCount++;
-		
+		SubmitCount++;		
 		submit.SaveData(SubmitCount);
+		SaveData();
 		return 1;
 	}
 	else {

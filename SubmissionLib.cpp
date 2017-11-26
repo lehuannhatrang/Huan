@@ -156,6 +156,12 @@ bool Submission::LoadData(int a) {
 	// Get information about submit time 
 	struct tm time;
 	TiXmlElement* childElement = element->FirstChildElement();
+	childElement->QueryIntAttribute("second", &time.tm_sec);
+	childElement = childElement->NextSiblingElement();
+	childElement->QueryIntAttribute("minute", &time.tm_min);
+	childElement = childElement->NextSiblingElement();
+	childElement->QueryIntAttribute("hour", &time.tm_hour);
+	childElement = childElement->NextSiblingElement();
 	childElement->QueryIntAttribute("day", &time.tm_mday);
 	childElement = childElement->NextSiblingElement();
 	childElement->QueryIntAttribute("month", &time.tm_mon);
@@ -198,6 +204,15 @@ bool Submission::SaveData(int pos) {
 	TiXmlElement* data2 = new TiXmlElement("Time");
 	{
 		this->setTime();
+		TiXmlElement* second = new TiXmlElement("Second");
+		second->SetAttribute("second", this->Time_Submission.tm_sec);
+		data2->LinkEndChild(second);
+		TiXmlElement* minute = new TiXmlElement("Minute");
+		minute->SetAttribute("minute", this->Time_Submission.tm_min);
+		data2->LinkEndChild(minute);
+		TiXmlElement* hour = new TiXmlElement("Hour");
+		hour->SetAttribute("hour", this->Time_Submission.tm_hour);
+		data2->LinkEndChild(hour);
 		TiXmlElement* day = new TiXmlElement("Day");
 		day->SetAttribute("day", this->Time_Submission.tm_mday);
 		data2->LinkEndChild(day);
@@ -205,7 +220,7 @@ bool Submission::SaveData(int pos) {
 		month->SetAttribute("month", this->Time_Submission.tm_mon);
 		data2->LinkEndChild(month);
 		TiXmlElement* year = new TiXmlElement("Year");
-		year->SetAttribute("year", this->Time_Submission.tm_year + 1900);
+		year->SetAttribute("year", this->Time_Submission.tm_year );
 		data2->LinkEndChild(year);
 	}
 	root->LinkEndChild(data2);
