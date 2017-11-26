@@ -29,50 +29,7 @@ string decrypt(std::string msg, std::string key)
 	return msg;
 }
 
-void UserMenu() {
-	bool isLogin = false;
-	while (!isLogin) {
-		system("cls");
-		int n;
-		cout << "Choose action :\n1.Login\n2.Sign in\n3.Exit\nYour option: ";
-		cin >> n;
-		switch (n)
-		{
-		case 1:
-			isLogin=Login();
-			system("pause");
-			break;
-		case 2:
-			CreateAccount();
-			system("pause");
-			break;
-		case 3:
-			return;
-		default:
-			break;
-		}
-	}
-	system("cls");
-
-	while (true) {
-		system("cls");
-		int n;
-		cout << "Choose action :\n1.Submit\n2.See your scores\n3.Exit\nYour option: ";
-		cin >> n;
-		switch (n) {
-		case 1:
-			break;
-		case 2:
-			break;
-		case 3:
-			return;
-		default:
-			break;
-		}
-	}
-}
-
-bool Login() {	
+bool Login(string &name) {
 	string ID, Password;
 	cout << "Login :" << endl;
 	cout << setw(10) << "MSSV:";
@@ -94,11 +51,13 @@ bool Login() {
 			if (ID == ACID&&Password == ACPW) {
 				AccountInfor.close();
 				cout << "Correct!!" << endl;
+				name = ID;
 				return true;
 			}
 		}
 		cout << "Incorrect!!" << endl;
 		AccountInfor.close();
+		name = "";
 		return false;
 	}
 	else {
@@ -110,11 +69,18 @@ bool Login() {
 
 bool CreateAccount() {
 	string ID, password;
+	int MSSV;
+
 	cout << "Join in :" << endl;
+
 	cout << setw(10) << "MSSV:";
 	getline(cin >> ws, ID);
+	if (!CheckID(ID)) return false;
+
 	cout << setw(10) << "Password:";
 	getline(cin >> ws, password);
+
+
 	fstream AccountInfor;
 	AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION,ios::in);
 	if (AccountInfor.is_open()) {
@@ -145,7 +111,7 @@ bool CreateAccount() {
 			string code = encrypt(ID + " " + password, ENCRYPT_KEY);
 			AccountInfor << code << endl;
 			AccountInfor.close();
-			User user("ID");
+			User user(ID);
 			user.CreateNewUserFolder();
 			return true;
 		}
@@ -160,3 +126,87 @@ User LoadUserData(string ID) {
 	return myAccount;
 }
 
+void MainMenu() {
+	string ID;
+	if (!LoginMenu(ID)) return;
+	if (ID == "ADMIN") AdminMenu();
+	else UserMenu(ID);
+}
+
+bool LoginMenu(string &ID) {
+	bool isLogin = false;
+	while (!isLogin) {
+		system("cls");
+		int n;
+		cout << "Choose action :\n1.Login\n2.Sign in\n3.Exit\nYour option: ";
+		cin >> n;
+		switch (n)
+		{
+		case 1:
+			isLogin = Login(ID);
+			system("pause");
+			break;
+		case 2:
+			CreateAccount();
+			system("pause");
+			break;
+		case 3:
+			return false;
+		default:
+			break;
+		}
+	}
+	return true;
+}
+
+void AdminMenu() {
+	system("cls");
+	while (true) {
+		system("cls");
+		int n;
+		cout << "Choose action :\n1.Update new default file\n2.See students scores\n3.See the statistics\n4.Exit\nYour option: ";
+		cin >> n;
+		switch (n) {
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			return;
+		default:
+			break;
+		}
+	}
+}
+
+void UserMenu(string ID) {
+	system("cls");
+	User user=LoadUserData(ID);
+	while (true) {
+		system("cls");
+		int n;
+		cout << "Choose action :\n1.Submit\n2.See your scores\n3.Exit\nYour option: ";
+		cin >> n;
+		switch (n) {
+		case 1:
+			if (user.Submit()) cout << "SUCCESS!!" << endl;
+			else cout << "SUBMIT FAILED!!" << endl;
+			system("pause");
+			break;
+		case 2:
+			break;
+		case 3:
+			return;
+		default:
+			break;
+		}
+	}
+}
+
+bool CheckID(string ID) {
+	if (ID == "ADMIN") return true;
+	for (int i = 0; i < ID.length(); i++) {
+		if (ID[i]<'0' || ID[i]>'9') return false;
+	}
+	return true;
+}

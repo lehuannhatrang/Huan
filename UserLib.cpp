@@ -6,6 +6,7 @@ User::User(string ID) {
 }
 
 bool User::CreateNewUserFolder() {
+	if (ID == "ADMIN") return false;
 	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
 	STARTUPINFOA StartupInfo; //This is an [in] parameter
 	string NewFolder = PROGRAM_FOLDER + ID + "\\";
