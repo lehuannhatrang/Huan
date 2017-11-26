@@ -14,7 +14,7 @@ bool User::CreateNewUserFolder() {
 	if (ID == "ADMIN") return false;
 	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
 	STARTUPINFOA StartupInfo; //This is an [in] parameter
-	string NewFolder = PROGRAM_FOLDER + ID + "\\";
+	string NewFolder = USER_FOLDER + ID + "\\";
 	string NewFoldercmd = "md \"" + NewFolder + "\"&&";
 
 	string cmd = "/k " + NewFoldercmd + "exit";
@@ -59,23 +59,105 @@ bool User::Submit() {
 		getline(cin >> ws, direct[i]);
 	}
 	Submission submit(ID);
+	submit.setpos(SubmitCount+1);
 	submit.setTime();
+	
 	if (submit.ComplineAndRun(direct,SubmitCount)) {
-		cout << "Submit Success!!" << endl;
 		submissionsList->addSubmit(submit);
 		SubmitCount++;
+		
+		submit.SaveData(SubmitCount);
 		return 1;
 	}
 	else {
+
 		cout << "false" << endl;
 		return 0;
 	}
 }
 
-bool User::LoadData(){
+bool User::LoadData() {
+	// Default the path to a User will be: D:\\ASSIGNMENT\\USER\\studentID
+	string backslash = "\\";
+	string XMLfilename = "userStatistics.xml";
+
+	// Set up a path links to location of XML file
+	string XMLPath = USER_FOLDER + backslash + this->ID + backslash + XMLfilename;
+
+	// Convert string to char*, which can be used to load data using tinyxml library
+	const char* ok = XMLPath.c_str();
+
+	TiXmlDocument doc(ok);
+	if (!doc.LoadFile()) {
+		throw  "Loading failed. Try again...\n";
+		return false;
+	}
+
+	TiXmlElement* root = doc.RootElement();
+
+	TiXmlElement* element = root->FirstChildElement();
+	//===================
+	//=Ignore ID Element=
+	//===================
+
+	element = element->NextSiblingElement();
+
+	// Get information about submit count
+	element->QueryIntAttribute("submitCount", &this->SubmitCount);
+	submissionsList->LoadData(this->SubmitCount,this->ID);
+	return true;
+
+}
+
+// For each submission, the number of submissions increased 1
+bool User::SaveData() {
+
+
+	TiXmlDocument XMLFile;
+	
+	// Set the prolog of XML file
+	TiXmlDeclaration* prolog = new TiXmlDeclaration("1.0", "utf-8", "");
+	XMLFile.LinkEndChild(prolog);
+
+	// This is just a comment
+	TiXmlComment* cmt = new TiXmlComment("Data Structure and Algorithm");
+	XMLFile.LinkEndChild(cmt);
+
+
+	TiXmlElement* root = new TiXmlElement("UserData");
+	XMLFile.LinkEndChild(root);
+
+	// Write student ID downto XML file
+	TiXmlElement* data1 = new TiXmlElement("ID");
+	const char* studentID = this->ID.c_str();
+	data1->SetAttribute("id", studentID);
+	root->LinkEndChild(data1);
+
+	// Write submit count downto XML file
+	TiXmlElement* data2 = new TiXmlElement("submit_count");
+
+	data2->SetAttribute("submitCount", this->SubmitCount);
+	root->LinkEndChild(data2);
+
+	// Finish action.... Create a path to submit folder
+	// Example path: D:\ASSIGNMENT\USER\1610491\userStatistics.xml
+	string backslash = "\\";
+	string XMLfilename = "userStatistics.xml";
+
+	// Set up a path links to location of XML file
+	string XMLPath = USER_FOLDER + backslash + this->ID + backslash + XMLfilename;
+
+	// Convert string to char*, which can be used to load data using tinyxml library
+	const char* ok = XMLPath.c_str();
+	XMLFile.SaveFile(ok);
+
 	return true;
 }
 
-bool User::SaveData(){
-	return true;
+void User::PrintScores() {
+	SubmissionNode *pwalk = submissionsList->getHead();
+	while (pwalk != NULL) {
+		pwalk->data.Print();
+		pwalk = pwalk->next;
+	}
 }

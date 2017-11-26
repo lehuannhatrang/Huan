@@ -1,6 +1,9 @@
 #pragma once
 #include"SubmissionLib.h"
 #include"tinyxml.h"
+#include<boost\filesystem.hpp>
+using namespace boost::filesystem;
+
 class User {
 private:
 	string ID;
@@ -13,6 +16,7 @@ public:
 	void set_ID(string ID);
 	bool Submit();
 	bool CreateNewUserFolder();
+	void PrintScores();
 	bool LoadData();
 	bool SaveData();
 };
