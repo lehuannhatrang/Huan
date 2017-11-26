@@ -214,3 +214,14 @@ bool CheckID(string ID) {
 	}
 	return true;
 }
+
+AVLTree<User>* LoadAllData() {
+	AVLTree<User> *root=new AVLTree<User>();
+	string ID;
+	bool taller = true;
+	User user(ID);
+	user.LoadData();
+	node<User> *usernode = new node<User>(user,stoi(user.get_ID(),nullptr));
+	root->AVLInsert(usernode,taller);
+	return root;
+}

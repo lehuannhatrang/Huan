@@ -1,5 +1,6 @@
 #pragma once
 #include"UserLib.h"
+#include"AVLTree.h"
 #include<iostream>
 #include<string>
 #include<sstream>
@@ -20,3 +21,4 @@ string encrypt(std::string msg, std::string key);
 string decrypt(std::string msg, std::string key);
 User LoadUserData(string ID);
 bool CheckID(string ID);
+AVLTree<User>* LoadAllData();

@@ -5,7 +5,9 @@ class User {
 private:
 	string ID;
 	int SubmitCount;
+	SubmissionLinkedList *submissionsList;
 public:
+	User();
 	User(string ID);
 	string get_ID();
 	void set_ID(string ID);
@@ -14,3 +16,4 @@ public:
 	bool LoadData();
 	bool SaveData();
 };
+

@@ -1,4 +1,7 @@
 #pragma once
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include<string>
 #include<iostream>
 #include<Windows.h>
@@ -11,13 +14,36 @@
 #define NUMBER_OF_FILE_SUB 2
 using namespace std;
 
+
 class Submission {
 private:
 	float score;
 	struct tm Time_Submission;
 	string ID;
 public:
+	Submission();
 	Submission(string ID);
-	bool ComplineAndRun(string Direct[], int count);
-	//void setTime();
+	void setTime();
+	tm getTime();
+	void setScore(float score);
+	float getScore();
+	bool CopyFiles(string Direct[], string NewFolder,int count);
+	bool ComplineAndRun(string Direct[], int count);	
+	bool LoadData();
+	bool SaveData();
+};
+
+struct SubmissionNode {
+	Submission submit;
+	SubmissionNode *next;
+	SubmissionNode(Submission submit);
+};
+
+class SubmissionLinkedList {
+private:
+	SubmissionNode *head;
+	int count;
+public:
+	SubmissionLinkedList();
+	void addSubmit(Submission submit);
 };

@@ -1,8 +1,13 @@
 #include"UserLib.h"
 
+User::User() {
+
+}
+
 User::User(string ID) {
 	this->ID = ID;
 	SubmitCount = 0;
+	submissionsList = new SubmissionLinkedList();
 }
 
 bool User::CreateNewUserFolder() {
@@ -54,8 +59,10 @@ bool User::Submit() {
 		getline(cin >> ws, direct[i]);
 	}
 	Submission submit(ID);
+	submit.setTime();
 	if (submit.ComplineAndRun(direct,SubmitCount)) {
-		cout << "Success!!" << endl;
+		cout << "Submit Success!!" << endl;
+		submissionsList->addSubmit(submit);
 		SubmitCount++;
 		return 1;
 	}
