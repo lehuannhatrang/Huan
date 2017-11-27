@@ -1,13 +1,16 @@
 #include"UserLib.h"
 
 User::User() {
-
+	ID = "";
+	SubmitCount = 0;
+	highScore = 0;
 }
 
 User::User(string ID) {
 	this->ID = ID;
 	SubmitCount = 0;
 	submissionsList = new SubmissionLinkedList();
+	highScore = 0;
 }
 
 bool User::CreateNewUserFolder() {
@@ -52,6 +55,7 @@ void User::set_ID(string ID) {
 	this->ID = ID;
 }
 
+/* Submit function */
 bool User::Submit() {
 	string direct[NUMBER_OF_FILE_SUB];
 	for (int i = 0; i < NUMBER_OF_FILE_SUB; i++) {
@@ -62,10 +66,12 @@ bool User::Submit() {
 	submit.setpos(SubmitCount+1);
 	submit.setTime();
 	
-	if (submit.ComplineAndRun(direct,SubmitCount)) {
+	if (submit.CompileAndRun(direct,SubmitCount)) {
 		submissionsList->addSubmit(submit);
 		SubmitCount++;		
+		submit.SaveScore(ID, SubmitCount);
 		submit.SaveData(SubmitCount);
+		GetHighScore();
 		SaveData();
 		return 1;
 	}
@@ -76,6 +82,7 @@ bool User::Submit() {
 	}
 }
 
+/* Load User data function*/
 bool User::LoadData() {
 	// Default the path to a User will be: D:\\ASSIGNMENT\\USER\\studentID
 	string backslash = "\\";
@@ -105,6 +112,9 @@ bool User::LoadData() {
 	// Get information about submit count
 	element->QueryIntAttribute("submitCount", &this->SubmitCount);
 	submissionsList->LoadData(this->SubmitCount,this->ID);
+
+	element->QueryFloatAttribute("high_score", &this->highScore);
+	submissionsList->LoadData(this->SubmitCount, this->ID);
 	return true;
 
 }
@@ -135,9 +145,12 @@ bool User::SaveData() {
 
 	// Write submit count downto XML file
 	TiXmlElement* data2 = new TiXmlElement("submit_count");
-
 	data2->SetAttribute("submitCount", this->SubmitCount);
 	root->LinkEndChild(data2);
+
+	TiXmlElement* data3 = new TiXmlElement("high_score");
+	data2->SetAttribute("high_score", this->highScore);
+	root->LinkEndChild(data3);
 
 	// Finish action.... Create a path to submit folder
 	// Example path: D:\ASSIGNMENT\USER\1610491\userStatistics.xml
@@ -154,10 +167,25 @@ bool User::SaveData() {
 	return true;
 }
 
+/* Print user scores */
 void User::PrintScores() {
+	cout << "Highest Score : " << highScore << endl;
 	SubmissionNode *pwalk = submissionsList->getHead();
 	while (pwalk != NULL) {
 		pwalk->data.Print();
+		pwalk = pwalk->next;
+	}
+}
+
+void User::GetHighScore() {
+	for (int i = 0; i < SubmitCount; i++) {
+		submissionsList->LoadData(i+1,ID);
+	}
+	SubmissionNode *pwalk=submissionsList->getHead();
+	while (pwalk != NULL) {
+		if (highScore < pwalk->data.getScore()) {
+			highScore = pwalk->data.getScore();			
+		}
 		pwalk = pwalk->next;
 	}
 }

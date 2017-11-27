@@ -9,6 +9,7 @@ private:
 	string ID;
 	int SubmitCount;
 	SubmissionLinkedList *submissionsList;
+	float highScore;
 public:
 	User();
 	User(string ID);
@@ -17,6 +18,7 @@ public:
 	bool Submit();
 	bool CreateNewUserFolder();
 	void PrintScores();
+	void GetHighScore();
 	bool LoadData();
 	bool SaveData();
 };

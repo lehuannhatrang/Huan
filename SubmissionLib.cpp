@@ -1,13 +1,14 @@
-#include"SubmissionLib.h"
+﻿#include"SubmissionLib.h"
 
 /* Submission class*/
 Submission::Submission() {
 	ID = "";
-	score = -1.0f;
+	score = 0.0f;
 }
 
 Submission::Submission(string ID) {
 	this->ID = ID;
+	score = 0.0f;
 }
 
 bool Submission::CopyFiles(string Direct[],string NewFolder ,int count) {
@@ -53,28 +54,18 @@ bool Submission::CopyFiles(string Direct[],string NewFolder ,int count) {
 	}
 }
 
-bool Submission::ComplineAndRun(string Direct[],int count) {
-
-	/*Create new folder*/
-	string NewFolder = USER_FOLDER + ID + "\\Sub"+to_string(count+1)+"\\";
-	
-	/*Text file output*/
-	string outputFile = "test."+to_string(count+1)+".txt";
-
-	/*Copy files to new folder*/
-	if(!CopyFiles(Direct, NewFolder ,count)) return 0;
-	
+bool Submission::Compile(string Direct[], string NewFolder, int count) {
 
 	/*Making Command Line*/
-	string ComplineAndRuncmd =		
-		"cd " + NewFolder+ "&&" + NewFolder[0] + ":"
+	string CompileAndRuncmd =
+		"cd " + NewFolder + "&&" + NewFolder[0] + ":"
 		+ "&&g++ -c main.cpp -o " + NewFolder + "Output\\" + "main.o"
 		+ "&&g++ -c " + USER_COMPLINE_FILES_NAMES + " -o" + NewFolder + "Output\\" + "Calculate.o"
 		+ "&&g++ " + NewFolder + "Output\\" + "main.o " + NewFolder + "Output\\" + "Calculate.o " + "-o " + NewFolder + "Output\\" + PROBLEM_NAME
-		+ "&&"+ NewFolder + "Output\\"+ PROBLEM_NAME + ".exe > Output\\" + outputFile + "&&exit";
+		+ "&& exit";
 		
 	//convert to char
-	string cmd = "/k "+ComplineAndRuncmd;
+	string cmd = "/k " + CompileAndRuncmd;
 	char *cmdArgs = new char[cmd.length()];
 	for (int i = 0; i < cmd.length(); i++) {
 		cmdArgs[i] = cmd[i];
@@ -88,7 +79,7 @@ bool Submission::ComplineAndRun(string Direct[],int count) {
 	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
 	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
 
-	 /*Compline and Run*/
+										 /*Compline and Run*/
 	if (CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
 		NULL, NULL, FALSE, 0, NULL,
 		NULL, &StartupInfo, &ProcessInfo))
@@ -96,12 +87,63 @@ bool Submission::ComplineAndRun(string Direct[],int count) {
 		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
 		CloseHandle(ProcessInfo.hThread);
 		CloseHandle(ProcessInfo.hProcess);
+		TerminateProcess(ProcessInfo.hProcess, 0);
 		return 1;
 	}
 	else
 	{
+		//TerminateProcess(ProcessInfo.hProcess, 0);
 		return 0;
 	}
+}
+
+bool Submission::CompileAndRun(string Direct[],int count) {
+
+	/*Create new folder*/
+	string NewFolder = USER_FOLDER + ID + "\\Sub"+to_string(count+1)+"\\";
+	
+	/*Text file output*/
+	
+
+	/*Copy files to new folder*/
+	if(!CopyFiles(Direct, NewFolder ,count)) return 0;
+	if (!Compile(Direct, NewFolder, count)) return 0;
+
+	string CompileAndRuncmd;
+	for (int i = 0; i < TEST_NUMBER; i++) {
+		string outputFile = "test."+to_string(i+1)+".txt";
+		string cmd = NewFolder + "Output\\" + PROBLEM_NAME + ".exe <" + TESTCASE_FOLDER + "testcase" + to_string(i + 1) + ".txt" 
+			+ ">" +NewFolder + "Output\\" + outputFile + " && ";
+		CompileAndRuncmd += cmd;
+	}
+	
+	//convert to char
+	string cmd = "/k cd " + NewFolder + "&&" + NewFolder[0] + ":&&" +CompileAndRuncmd+"exit";
+	//cout << cmd;
+	char *cmdArgs = new char[cmd.length()];
+	for (int i = 0; i < cmd.length(); i++) {
+		cmdArgs[i] = cmd[i];
+	}
+	cmdArgs[cmd.length()] = '\0';
+
+	//some varaiable
+	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
+	STARTUPINFOA StartupInfo; //This is an [in] parameter
+	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
+
+	 /*Compline and Run*/
+	CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
+		NULL, NULL, FALSE, 0, NULL,
+		NULL, &StartupInfo, &ProcessInfo);
+	
+		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+		CloseHandle(ProcessInfo.hThread);
+		CloseHandle(ProcessInfo.hProcess);
+		//TerminateProcess(ProcessInfo.hProcess, 0);
+		return 1;
+	
+
 }
 
 void Submission::setTime() {
@@ -228,7 +270,7 @@ bool Submission::SaveData(int pos) {
 	// Scrore will be calculated through compile and run process
 	// Updating......
 	TiXmlElement* data3 = new TiXmlElement("Score");
-	data3->SetDoubleAttribute("score", 0.5);
+	data3->SetDoubleAttribute("score", this->score);
 	root->LinkEndChild(data3);
 
 	// Finish action.... Create a path to submit folder
@@ -250,7 +292,7 @@ bool Submission::SaveData(int pos) {
 
 void Submission::Print() {
 	cout <<"Lan " << pos << "." << endl;
-	cout << "Diem : " << score <<endl;
+	cout << "Diem : " << this->score <<endl;
 	cout << "Thoi gian nop: " <<Time_Submission.tm_hour << ":";
 	cout << Time_Submission.tm_min << ":";
 	cout << Time_Submission.tm_sec << "  ";
@@ -263,6 +305,70 @@ void Submission::Print() {
 void Submission::setpos(int pos) {
 	this->pos = pos;
 }
+
+bool Submission::Compare(string MSSV, int SubCount, int stt) {
+	string temp = "\\";
+	//Địa chỉ file tạo ra
+	string output = OUTPUT_FOLDER + temp + MSSV + temp + "Sub" + to_string(SubCount)
+		+ temp + "Output" + temp + "test." + to_string(stt) + ".txt";
+	//Địa chỉ file đáp án
+	string result = RESULT_FOLDER + temp + "result" + to_string(stt) + ".txt";
+	ifstream File1(output);
+	ifstream File2(result);
+	if (!File1.is_open()) {
+		cout << "Cannot open " << MSSV << "test." << stt << ".txt" << endl;
+		return false;
+	}
+	if (!File2.is_open()) {
+		cout << "Cannot open result" << stt << ".txt" << endl;
+		return false;
+	}
+	string line1, line2;
+	while (getline(File1, line1)) {
+		getline(File2, line2);
+		if (line1.size() != line2.size()) {
+			return false;
+		}
+		else {
+			int Stop = line1.size();
+			for (int i = 0; i < Stop; i++) {
+				if (line1[i] != line2[i]) return false;
+			}
+		}
+	}
+	return true;
+}
+
+void Submission::SaveScore(string MSSV, int SubCount) {
+	string temp = "\\";
+	//Địa chỉ của file output
+	string output = OUTPUT_FOLDER + temp + MSSV + temp + "Sub" + to_string(SubCount) + temp + "result.txt";
+	//Địa chỉ file trọng số 1 2 3 2 2
+	string weightFolder = RESULT_FOLDER + temp + "weight.txt";
+	ofstream result;
+	result.open(output, ios::app);
+	double ScoreArray[TEST_NUMBER+1] = { 0.0 ,0.0 ,0.0 ,0.0, 0.0, 0.0 }; //Khởi tạo mảng lưu kết quả so sánh
+	for (int i = 1; i <= TEST_NUMBER; i++) {
+		if (Compare(MSSV, SubCount, i)) {
+			result << "10.0" << " ";
+			ScoreArray[i - 1] = 10.0;
+		}
+		else result << 0 << " ";
+	}
+	ifstream weight;
+	weight.open(weightFolder, ios::in);
+	string parameter;
+	int i = 0;
+	while (getline(weight, parameter, ' ')) {
+		ScoreArray[TEST_NUMBER] += ScoreArray[i] * atof(parameter.c_str()); //Cập nhật điểm tổng kết
+		i++;
+	}
+	result << ScoreArray[TEST_NUMBER];
+	this->score = ScoreArray[TEST_NUMBER];
+	weight.close();
+	result.close();
+}
+
 
 /* SubmissionNode Class*/
 SubmissionNode::SubmissionNode(Submission submit) {
@@ -288,6 +394,7 @@ void SubmissionLinkedList::addSubmit(Submission submit) {
 }
 
 bool SubmissionLinkedList::LoadData(int submitCount,string ID) {
+	if (head != NULL) head = NULL;
 	for (int i = 0; i < submitCount; i++) {
 		Submission submit(ID);
 		submit.LoadData(i+1);

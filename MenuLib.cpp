@@ -79,6 +79,7 @@ void UserMenu(string ID) {
 			system("pause");
 			break;
 		case 2:
+			user.LoadData();
 			user.PrintScores();
 			system("pause");
 			break;

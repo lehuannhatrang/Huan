@@ -1,5 +1,6 @@
 #include"CommonLib.h"
 
+/* Use key to encrypt the account infor */
 string encrypt(std::string msg, std::string key)
 {
 	// Make sure the key is at least as long as the message
@@ -14,6 +15,8 @@ string encrypt(std::string msg, std::string key)
 	}
 	return msg;
 }
+
+/* Use key to decrypt the account infor */
 string decrypt(std::string msg, std::string key)
 {
 
@@ -29,6 +32,7 @@ string decrypt(std::string msg, std::string key)
 	return msg;
 }
 
+/* Login Function */
 bool Login(string &name) {
 	string ID, Password;
 	cout << "Login :" << endl;
@@ -38,35 +42,36 @@ bool Login(string &name) {
 	getline(cin >> ws, Password);
 
 	std::fstream AccountInfor;
-	AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION,ios::in);
+	AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION,ios::in);		//open file to read
 	if (AccountInfor.is_open()) {
-
+		//read all the file 
 		while (!AccountInfor.eof()) {
 			string str, ACID, ACPW;
 			stringstream ss;
 			getline(AccountInfor, str);
-			str = decrypt(str, ENCRYPT_KEY);
+			str = decrypt(str, ENCRYPT_KEY);	//decript the infor
 			ss << str;
 			ss >> ACID >> ACPW;
 			if (ID == ACID&&Password == ACPW) {
-				AccountInfor.close();
-				cout << "Correct!!" << endl;
-				name = ID;
+				AccountInfor.close();			//close the accounts infor file
+				cout << "Correct!!" << endl;	
+				name = ID;						//get name
 				return true;
 			}
 		}
-		cout << "Incorrect!!" << endl;
-		AccountInfor.close();
+		cout << "Incorrect!!" << endl;			//dont find the correct infor -> exit
+		AccountInfor.close();					
 		name = "";
 		return false;
 	}
 	else {
-		cout << "Cannot open Accounts file" << endl;
+		cout << "Cannot open Accounts file" << endl;	
 		return false;
 	}
 	
 }
 
+/* Function to create new account*/
 bool CreateAccount() {
 	string ID, password;
 	int MSSV;
@@ -75,7 +80,7 @@ bool CreateAccount() {
 
 	cout << setw(10) << "MSSV:";
 	getline(cin >> ws, ID);
-	if (!CheckID(ID)) return false;
+	if (!CheckID(ID)) return false;			//Check if it is an ID
 
 	cout << setw(10) << "Password:";
 	getline(cin >> ws, password);
@@ -111,10 +116,10 @@ bool CreateAccount() {
 		if (AccountInfor.is_open()) {
 			string code = encrypt(ID + " " + password, ENCRYPT_KEY);
 			AccountInfor << code << endl;
-			AccountInfor.close();
-			User user(ID);
-			user.CreateNewUserFolder();
-			user.SaveData();
+			AccountInfor.close();			//close the account infor file
+			User user(ID);					
+			user.CreateNewUserFolder();		//create new folder for this account
+			user.SaveData();				//save this account data
 			return true;
 		}
 		else {
@@ -123,11 +128,13 @@ bool CreateAccount() {
 		}
 }
 
+/* Load the user data */
 User LoadUserData(string ID) {
 	User myAccount(ID);
 	myAccount.LoadData();
 	return myAccount;
 }
+
 
 bool CheckNumber(string str) {
 	for (int i = 0; i < str.length(); i++) {
@@ -178,7 +185,7 @@ bool FindingUser() {
 		string ID;
 		cout << "\nMSSV : ";
 		getline(cin >> ws, ID);
-		if (!CheckNumber(ID)||ID=="3") return 0;
+		if (!CheckNumber(ID)||ID=="x") return 0;
 		node<User> *user=new node<User>();
 		if (!data->AVLSearch(user, stoi(ID, nullptr))) {
 			cout << "Not Found!!" << endl;
