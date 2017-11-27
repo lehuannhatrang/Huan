@@ -29,6 +29,7 @@ bool LoginMenu(string &ID) {
 			system("pause");
 			break;
 		case 3:
+			
 			return false;
 		default:
 			break;
@@ -42,16 +43,18 @@ void AdminMenu() {
 	while (true) {
 		system("cls");
 		int n;
-		cout << "Choose action :\n1.Update new default file\n2.See students scores\n3.See the statistics\n4.Exit\nYour option: ";
+		cout << "Choose action :\n1.See students scores\n2.See the statistics\n3.Exit\nYour option: ";
 		string str;
 		getline(cin >> ws, str);
 		if (!CheckNumber(str)) continue;
 		n = stoi(str, nullptr);
 		switch (n) {
 		case 1:
+			FindingUser(user);
 			break;
 		case 2:
-			FindingUser();
+			ViewStatistics(user);
+			system("pause");
 			break;
 		case 3:
 			return;

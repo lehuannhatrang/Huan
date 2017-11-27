@@ -64,3 +64,5 @@ public:
 	bool LoadData(int submitCount,string ID);
 	
 };
+
+char* string2char(string str);

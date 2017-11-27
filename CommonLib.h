@@ -19,4 +19,5 @@ User LoadUserData(string ID);
 bool CheckID(string ID);
 AVLTree<User>* LoadAllData();
 bool CheckNumber(string str);
-bool FindingUser();
+bool FindingUser(AVLTree<User> *user);
+void ViewStatistics(AVLTree<User> *user);

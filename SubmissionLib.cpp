@@ -26,11 +26,7 @@ bool Submission::CopyFiles(string Direct[],string NewFolder ,int count) {
 
 	//convert to char
 	string cmd = "/k " + NewFoldercmd + ComplineAndRuncmd;
-	char *cmdArgs = new char[cmd.length()];
-	for (int i = 0; i < cmd.length(); i++) {
-		cmdArgs[i] = cmd[i];
-	}
-	cmdArgs[cmd.length()] = '\0';
+	char *cmdArgs = string2char(cmd);
 
 	//some varaiable
 	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
@@ -39,19 +35,16 @@ bool Submission::CopyFiles(string Direct[],string NewFolder ,int count) {
 	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
 
 										 /*Compline and Run*/
-	if (CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
+	CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
 		NULL, NULL, FALSE, 0, NULL,
-		NULL, &StartupInfo, &ProcessInfo))
-	{
-		/*WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+		NULL, &StartupInfo, &ProcessInfo);
+
+		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
 		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);*/
+		CloseHandle(ProcessInfo.hProcess);
 		return 1;
-	}
-	else
-	{
-		return 0;
-	}
+	
+	
 }
 
 bool Submission::Compile(string Direct[], string NewFolder, int count) {
@@ -66,11 +59,7 @@ bool Submission::Compile(string Direct[], string NewFolder, int count) {
 		
 	//convert to char
 	string cmd = "/k " + CompileAndRuncmd;
-	char *cmdArgs = new char[cmd.length()];
-	for (int i = 0; i < cmd.length(); i++) {
-		cmdArgs[i] = cmd[i];
-	}
-	cmdArgs[cmd.length()] = '\0';
+	char *cmdArgs = string2char(cmd);
 
 
 	//some varaiable
@@ -82,19 +71,15 @@ bool Submission::Compile(string Direct[], string NewFolder, int count) {
 										 /*Compline and Run*/
 	if (CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
 		NULL, NULL, FALSE, 0, NULL,
-		NULL, &StartupInfo, &ProcessInfo))
-	{
+		NULL, &StartupInfo, &ProcessInfo));
+
 		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
 		CloseHandle(ProcessInfo.hThread);
 		CloseHandle(ProcessInfo.hProcess);
 		TerminateProcess(ProcessInfo.hProcess, 0);
 		return 1;
-	}
-	else
-	{
-		//TerminateProcess(ProcessInfo.hProcess, 0);
-		return 0;
-	}
+	
+	
 }
 
 bool Submission::CompileAndRun(string Direct[],int count) {
@@ -119,12 +104,7 @@ bool Submission::CompileAndRun(string Direct[],int count) {
 	
 	//convert to char
 	string cmd = "/k cd " + NewFolder + "&&" + NewFolder[0] + ":&&" +CompileAndRuncmd+"exit";
-	//cout << cmd;
-	char *cmdArgs = new char[cmd.length()];
-	for (int i = 0; i < cmd.length(); i++) {
-		cmdArgs[i] = cmd[i];
-	}
-	cmdArgs[cmd.length()] = '\0';
+	char *cmdArgs = string2char(cmd);
 
 	//some varaiable
 	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
@@ -291,7 +271,7 @@ bool Submission::SaveData(int pos) {
 }
 
 void Submission::Print() {
-	cout <<"Lan " << pos << "." << endl;
+	cout <<"\nLan " << pos << "." << endl;
 	cout << "Diem : " << this->score <<endl;
 	cout << "Thoi gian nop: " <<Time_Submission.tm_hour << ":";
 	cout << Time_Submission.tm_min << ":";
@@ -299,6 +279,7 @@ void Submission::Print() {
 	cout  << Time_Submission.tm_mday << " /";
 	cout << 1 + Time_Submission.tm_mon << " /";
 	cout << 1900 + Time_Submission.tm_year <<endl;	
+
 	
 }
 
@@ -394,7 +375,10 @@ void SubmissionLinkedList::addSubmit(Submission submit) {
 }
 
 bool SubmissionLinkedList::LoadData(int submitCount,string ID) {
-	if (head != NULL) head = NULL;
+	if (head != NULL) {
+		delete head;
+		head = NULL;
+	}
 	for (int i = 0; i < submitCount; i++) {
 		Submission submit(ID);
 		submit.LoadData(i+1);
@@ -403,3 +387,11 @@ bool SubmissionLinkedList::LoadData(int submitCount,string ID) {
 	return true;
 }
 
+char* string2char(string str) {
+	char *newchar = new char[str.length()];
+	for (int i = 0; i < str.length(); i++) {
+		newchar[i] = str[i];
+	}
+	newchar[str.length()] = '\0';
+	return newchar;
+}

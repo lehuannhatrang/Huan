@@ -58,28 +58,36 @@ void User::set_ID(string ID) {
 /* Submit function */
 bool User::Submit() {
 	string direct[NUMBER_OF_FILE_SUB];
-	for (int i = 0; i < NUMBER_OF_FILE_SUB; i++) {
-		cout << "Nhap duong dan toi file "<< i+1 << ": ";
-		getline(cin >> ws, direct[i]);
-	}
-	Submission submit(ID);
-	submit.setpos(SubmitCount+1);
-	submit.setTime();
-	
-	if (submit.CompileAndRun(direct,SubmitCount)) {
-		submissionsList->addSubmit(submit);
-		SubmitCount++;		
-		submit.SaveScore(ID, SubmitCount);
-		submit.SaveData(SubmitCount);
-		GetHighScore();
-		SaveData();
-		return 1;
-	}
-	else {
+		for (int i = 0; i < NUMBER_OF_FILE_SUB; i++) {
+			cout << "Nhap duong dan toi file " << i + 1 << ": ";
+			getline(cin >> ws, direct[i]);
+			std::fstream file;
+			file.open(direct[i], ios::in);
+			if (file.fail()) {
+				cout << "File doesn't existed!!" << endl;
+				return 0;
+			}
+			file.close();
+		}
 
-		cout << "false" << endl;
-		return 0;
-	}
+		Submission submit(ID);
+		submit.setpos(SubmitCount + 1);
+		submit.setTime();
+
+		if (submit.CompileAndRun(direct, SubmitCount)) {
+			submissionsList->addSubmit(submit);
+			SubmitCount++;
+			submit.SaveScore(ID, SubmitCount);
+			submit.SaveData(SubmitCount);
+			GetHighScore();
+			SaveData();
+			return 1;
+		}
+		else {
+			cout << "false" << endl;
+			return 0;
+		}
+	
 }
 
 /* Load User data function*/
@@ -89,7 +97,7 @@ bool User::LoadData() {
 	string XMLfilename = "userStatistics.xml";
 
 	// Set up a path links to location of XML file
-	string XMLPath = USER_FOLDER + backslash + this->ID + backslash + XMLfilename;
+	string XMLPath = USER_FOLDER  + this->ID + backslash + XMLfilename;
 
 	// Convert string to char*, which can be used to load data using tinyxml library
 	const char* ok = XMLPath.c_str();
@@ -111,7 +119,6 @@ bool User::LoadData() {
 
 	// Get information about submit count
 	element->QueryIntAttribute("submitCount", &this->SubmitCount);
-	submissionsList->LoadData(this->SubmitCount,this->ID);
 
 	element->QueryFloatAttribute("high_score", &this->highScore);
 	submissionsList->LoadData(this->SubmitCount, this->ID);
@@ -169,12 +176,15 @@ bool User::SaveData() {
 
 /* Print user scores */
 void User::PrintScores() {
-	cout << "Highest Score : " << highScore << endl;
+	cout << "_________________________________________";
+	cout << "\nID : " << this->ID << endl;
+	cout << "\nHighest Score : " << highScore << endl;
 	SubmissionNode *pwalk = submissionsList->getHead();
 	while (pwalk != NULL) {
 		pwalk->data.Print();
 		pwalk = pwalk->next;
 	}
+	cout << "_________________________________________"<<endl;
 }
 
 void User::GetHighScore() {
@@ -188,4 +198,8 @@ void User::GetHighScore() {
 		}
 		pwalk = pwalk->next;
 	}
+}
+
+float User::getScore() {
+	return highScore;
 }

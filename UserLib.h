@@ -21,5 +21,8 @@ public:
 	void GetHighScore();
 	bool LoadData();
 	bool SaveData();
+	float getScore();
 };
+
+
 

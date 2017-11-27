@@ -145,7 +145,8 @@ bool CheckNumber(string str) {
 
 bool CheckID(string ID) {
 	if (ID == "ADMIN") return true;
-	if (CheckNumber(ID)) return true;
+	if (CheckNumber(ID)&&ID.length()>5) return true;
+	cout << "It's not a student's ID" << endl;
 	return false;
 }
 
@@ -179,8 +180,7 @@ AVLTree<User>* LoadAllData() {
 	return root;
 }
 
-bool FindingUser() {
-	AVLTree<User> *data = LoadAllData();
+bool FindingUser(AVLTree<User> *data) {
 	while (true) {
 		string ID;
 		cout << "\nMSSV : ";
@@ -194,4 +194,16 @@ bool FindingUser() {
 		user->data.PrintScores();
 	}
 
+}
+
+void ViewStatistics(AVLTree<User> *data)
+{
+	if (data->root == NULL) return;
+	data->root->data.PrintScores();
+	AVLTree<User> *temp=data ;
+	node<User> *pwalk = data->root;
+	temp->root = data->root->left;
+	ViewStatistics(temp);
+	temp->root = pwalk->right;
+	ViewStatistics(temp);
 }
