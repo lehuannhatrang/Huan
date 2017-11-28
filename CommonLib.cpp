@@ -115,7 +115,7 @@ bool CreateAccount() {
 		AccountInfor.open(ACCOUNT_INFOR_FILE_LOCATION, ios::out | ios::in | ios::app);
 		if (AccountInfor.is_open()) {
 			string code = encrypt(ID + " " + password, ENCRYPT_KEY);
-			AccountInfor << code << endl;
+			AccountInfor  << code << endl;
 			AccountInfor.close();			//close the account infor file
 			User user(ID);					
 			user.CreateNewUserFolder();		//create new folder for this account
@@ -160,8 +160,10 @@ AVLTree<User>* LoadAllData() {
 		while (!AccountInfor.eof()) {
 			string str, temp;
 			stringstream ss;
-			getline(AccountInfor, str);
-			str = decrypt(str, ENCRYPT_KEY);
+
+			getline(AccountInfor, str);		
+			if (str == "") break;
+			str = decrypt(str, ENCRYPT_KEY);			
 			ss << str;
 			ss >> ID >> temp;
 			if (ID == "ADMIN") continue;
@@ -200,7 +202,7 @@ void ViewStatistics(AVLTree<User> *data)
 {
 	if (data->root == NULL) return;
 	data->root->data.PrintScores();
-	AVLTree<User> *temp=data ;
+	AVLTree<User> *temp=new AVLTree<User>() ;
 	node<User> *pwalk = data->root;
 	temp->root = data->root->left;
 	ViewStatistics(temp);

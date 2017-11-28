@@ -103,11 +103,15 @@ public:
 	}
 
 	node<Type>* AVLInsert(node<Type> *newPtr, bool &taller) {
+		
 		if (root == NULL) {
 			root = newPtr;
 			taller = true;
 			return root;
 		}
+		/*if (newPtr->key == root->key) {
+			return root;
+		}*/
 		AVLTree<Type> *temp = new AVLTree<Type>();
 		if (newPtr->key < root->key) {
 			temp->root = root->left;

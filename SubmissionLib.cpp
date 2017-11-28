@@ -375,6 +375,7 @@ void SubmissionLinkedList::addSubmit(Submission submit) {
 }
 
 bool SubmissionLinkedList::LoadData(int submitCount,string ID) {
+	
 	if (head != NULL) {
 		delete head;
 		head = NULL;
