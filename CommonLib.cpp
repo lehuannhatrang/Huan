@@ -200,7 +200,7 @@ void ViewStatistics(AVLTree<User> *data)
 {
 	if (data->root == NULL) return;
 	data->root->data.PrintScores();
-	AVLTree<User> *temp=data ;
+	AVLTree<User> *temp=new AVLTree<User>() ;
 	node<User> *pwalk = data->root;
 	temp->root = data->root->left;
 	ViewStatistics(temp);
