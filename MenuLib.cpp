@@ -4,6 +4,7 @@ void MainMenu() {
 		string ID;
 		if (!LoginMenu(ID)) return;
 		if (ID == "ADMIN") AdminMenu();
+		else if (ID == "Teacher") TeacherMenu();
 		else UserMenu(ID);
 	}
 }
@@ -49,22 +50,67 @@ bool LoginMenu(string &ID) {
 	return true;
 }
 
-/* Admin menu */
+/* ADMIN menu */
 void ShowAdminMenu() {
 	system("cls");
 	cout << "ADMIN MENU\n";
+	cout << "************************\n";
+	cout << "1. Upload weight file\n2. Upload test cases\n3. Upload Makefile\n4. Exit\n";
+	cout << "************************\n";
+	cout << "Chose an action:\n";
+}
+
+void AdminMenu() {
+	while (true) {
+		system("cls");
+		int n;
+		ShowAdminMenu();
+		string str;
+		getline(cin >> ws, str);
+		if (!CheckNumber(str)) continue;
+		n = stoi(str, nullptr);
+		switch (n) {
+		case 1:
+			if (!UploadWeight()) cout << "FAILED!!" << endl;
+			else cout << "SUCCESS!!" << endl;
+			system("pause");
+			break;
+		case 2:
+			if (!UploadTestcases()) cout << "Something Wrong Happen!!" << endl;
+			else cout << "SUCCESS!!" << endl;
+			system("pause");
+			break;
+		case 3:
+			if (!UploadMakefile()) cout << "FAILED!!" << endl;
+			else cout << "SUCCESS!!" << endl;
+			system("pause");
+			break;
+		case 4:
+			return;
+		default:
+			break;
+		}
+	}
+}
+
+
+
+/* Teacher menu */
+void ShowTeacherMenu() {
+	system("cls");
+	cout << "TEACHER MENU\n";
 	cout << "************************\n";
 	cout << "1. See students scores\n2. See the statistics\n3. Exit\n";
 	cout << "************************\n";
 	cout << "Chose an action:\n";
 }
 
-void AdminMenu() {
+void TeacherMenu() {
 	AVLTree<User> *user = LoadAllData();	
 	while (true) {
 		system("cls");
 		int n;
-		ShowAdminMenu();
+		ShowTeacherMenu();
 		string str;
 		getline(cin >> ws, str);
 		if (!CheckNumber(str)) continue;

@@ -24,4 +24,8 @@ bool CheckNumber(string str);
 bool FindingUser(AVLTree<User> *user);
 void ViewStatistics(AVLTree<User> *user);
 
+bool UploadWeight();
+bool UploadTestcases();
+bool UploadMakefile();
+
 #endif

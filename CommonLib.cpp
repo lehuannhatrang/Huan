@@ -144,7 +144,7 @@ bool CheckNumber(string str) {
 }
 
 bool CheckID(string ID) {
-	if (ID == "ADMIN") return true;
+	if (ID == "ADMIN"||ID=="Teacher") return true;
 	if (CheckNumber(ID)&&ID.length()>5) return true;
 	cout << "It's not a student's ID" << endl;
 	return false;
@@ -162,11 +162,11 @@ AVLTree<User>* LoadAllData() {
 			stringstream ss;
 
 			getline(AccountInfor, str);		
-			if (str == "") break;
+			if (str == "") continue;
 			str = decrypt(str, ENCRYPT_KEY);			
 			ss << str;
 			ss >> ID >> temp;
-			if (ID == "ADMIN") continue;
+			if (ID == "ADMIN"||ID=="Teacher") continue;
 			User user = LoadUserData(ID);
 			node<User> *usernode = new node<User>(user, stoi(user.get_ID(), nullptr));
 			root->AVLInsert(usernode, taller);
@@ -208,4 +208,45 @@ void ViewStatistics(AVLTree<User> *data)
 	ViewStatistics(temp);
 	temp->root = pwalk->right;
 	ViewStatistics(temp);
+}
+
+/* Upload weight file function */
+
+bool UploadWeight() {
+	string WeightfileDir;
+	cout << "Type new Weight-file directory :";
+	getline(cin >> ws, WeightfileDir);
+	if (exists(WeightfileDir)) {
+		copy_file(WeightfileDir.c_str(), (string(RESULT_FOLDER) + "\\weight.txt").c_str(),copy_option::overwrite_if_exists);
+		return true;
+	}
+	else return false;
+}
+
+/* Upload Test cases function*/
+
+bool UploadTestcases() {
+	for (int i = 0; i < TEST_NUMBER; i++) {
+		string direct;
+		cout << "Type testcase" << i + 1 << " direction : ";
+		getline(cin >> ws, direct);
+		if (exists(direct)) {
+			copy_file(direct.c_str(), (string(TESTCASE_FOLDER) + "testcase" + to_string(i + 1) + ".txt"), copy_option::overwrite_if_exists);
+		}
+		else return false;
+	}
+	return true;
+
+}
+
+bool UploadMakefile() {
+	string MakefileDir;
+	cout << "Type new Make-file directory :";
+	getline(cin >> ws, MakefileDir);
+	if (exists(MakefileDir)) {
+		copy_file(MakefileDir.c_str(), MAKEFILE_DIRECTORY, copy_option::overwrite_if_exists);
+		return true;
+	}
+	else return false;
+
 }
