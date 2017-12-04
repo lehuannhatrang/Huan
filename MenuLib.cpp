@@ -8,12 +8,23 @@ void MainMenu() {
 	}
 }
 
+/* Main menu */
+
+void ShowMainMenu() {
+	system("cls");
+	cout << "ASSIGNMENT SUBMIT\n";
+	cout << "************************\n";
+	cout << "1. Log in\n2. Sign up\n3. Quit\n";
+	cout << "************************\n";
+	cout << "Chose an action:\n";
+}
+
 bool LoginMenu(string &ID) {
 	bool isLogin = false;
 	while (!isLogin) {
 		system("cls");		
 		int n;
-		cout << "Choose action :\n1.Login\n2.Sign up\n3.Exit\nYour option: ";
+		ShowMainMenu();
 		string str;
 		getline(cin >> ws, str);
 		if (!CheckNumber(str)) continue;
@@ -38,12 +49,22 @@ bool LoginMenu(string &ID) {
 	return true;
 }
 
+/* Admin menu */
+void ShowAdminMenu() {
+	system("cls");
+	cout << "ADMIN MENU\n";
+	cout << "************************\n";
+	cout << "1. See students scores\n2. See the statistics\n3. Exit\n";
+	cout << "************************\n";
+	cout << "Chose an action:\n";
+}
+
 void AdminMenu() {
 	AVLTree<User> *user = LoadAllData();	
 	while (true) {
 		system("cls");
 		int n;
-		cout << "Choose action :\n1.See students scores\n2.See the statistics\n3.Exit\nYour option: ";
+		ShowAdminMenu();
 		string str;
 		getline(cin >> ws, str);
 		if (!CheckNumber(str)) continue;
@@ -64,13 +85,23 @@ void AdminMenu() {
 	}
 }
 
+/* User menu */
+void ShowUserMenu() {
+	system("cls");
+	cout << "USER MENU\n";
+	cout << "************************\n";
+	cout << "1. Submit\n2. See your scores\n3. Exit\n";
+	cout << "************************\n";
+	cout << "Chose an action:\n";
+}
+
 void UserMenu(string ID) {
 	system("cls");
 	User user = LoadUserData(ID);
 	while (true) {
 		system("cls");
 		int n;
-		cout << "Choose action :\n1.Submit\n2.See your scores\n3.Exit\nYour option: ";
+		ShowUserMenu();
 		string str;
 		getline(cin >> ws, str);
 		if (!CheckNumber(str)) continue;

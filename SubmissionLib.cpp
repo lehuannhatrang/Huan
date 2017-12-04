@@ -11,44 +11,11 @@ Submission::Submission(string ID) {
 	score = 0.0f;
 }
 
-bool Submission::CopyFiles(string Direct[],string NewFolder ,int count) {
-	string NewFoldercmd = "md \"" + NewFolder + "\"&&";
-	NewFoldercmd += "md \"" + NewFolder + "Output\\\"&&";
 
-	string CPUserFile;
-	for (int i = 0; i < NUMBER_OF_FILE_SUB; i++) {
-		CPUserFile += "COPY \"" + Direct[i] + "\"" + " \"" + NewFolder + "\"&&";
-	}
 
-	string ComplineAndRuncmd =
-		CPUserFile
-		+ "COPY \"" + MAIN_DIRECT + "\"" + " \"" + NewFolder + "main.cpp\"&& exit";
-
-	//convert to char
-	string cmd = "/k " + NewFoldercmd + ComplineAndRuncmd;
-	char *cmdArgs = string2char(cmd);
-
-	//some varaiable
-	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
-	STARTUPINFOA StartupInfo; //This is an [in] parameter
-	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
-
-										 /*Compline and Run*/
-	CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
-		NULL, NULL, FALSE, 0, NULL,
-		NULL, &StartupInfo, &ProcessInfo);
-
-		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);
-		return 1;
-	
-	
-}
-
-bool Submission::Compile(string Direct[], string NewFolder, int count) {
-
+bool Submission::Compile(string NewFolder, int count) {
+	string OutputFolder = NewFolder + "Output\\";
+	create_directories(OutputFolder.c_str());
 	/*Making Command Line*/
 	string CompileAndRuncmd =
 		"cd " + NewFolder + "&&" + NewFolder[0] + ":"
@@ -56,10 +23,51 @@ bool Submission::Compile(string Direct[], string NewFolder, int count) {
 		+ "&&g++ -c " + USER_COMPLINE_FILES_NAMES + " -o" + NewFolder + "Output\\" + "Calculate.o"
 		+ "&&g++ " + NewFolder + "Output\\" + "main.o " + NewFolder + "Output\\" + "Calculate.o " + "-o " + NewFolder + "Output\\" + PROBLEM_NAME
 		+ "&& exit";
-		
+
 	//convert to char
 	string cmd = "/k " + CompileAndRuncmd;
-	char *cmdArgs = string2char(cmd);
+	char *cmdArgs = _strdup(cmd.c_str());
+
+	//some varaiable
+	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
+	STARTUPINFOA StartupInfo; //This is an [in] parameter
+	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
+	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
+
+										 //Compline and Run
+	if (CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs, NULL, NULL, FALSE, 0, NULL, NULL, &StartupInfo, &ProcessInfo));
+
+	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+	CloseHandle(ProcessInfo.hThread);
+	CloseHandle(ProcessInfo.hProcess);
+	TerminateProcess(ProcessInfo.hProcess, 0);
+	return true;
+}
+
+bool Submission::CompileAndRun(string filePath, int count) {
+	//Create new folder and Copy files from file Path to new folder
+	string NewFolder = USER_FOLDER + ID + "\\Sub" + to_string(count + 1) + "\\";
+	bool copySuccess = CopyDir(filePath.c_str(), NewFolder.c_str());
+
+	// Check if copy is success
+	if (copySuccess == false) return false;
+
+	// Perform compile and return false if compile failed
+
+	bool compileSuccess = Compile(NewFolder, count);
+	if (compileSuccess == false) return false;
+
+	string CompileAndRuncmd;
+	for (int i = 0; i < TEST_NUMBER; i++) {
+		string outputFile = "test." + to_string(i + 1) + ".txt";
+		string cmd = NewFolder + "Output\\" + PROBLEM_NAME + ".exe <" + TESTCASE_FOLDER + "testcase" + to_string(i + 1) + ".txt"
+			+ ">" + NewFolder + "Output\\" + outputFile + " && ";
+		CompileAndRuncmd += cmd;
+	}
+
+	//convert to char
+	string cmd = "/k cd " + NewFolder + "&&" + NewFolder[0] + ":&&" + CompileAndRuncmd + "exit";
+	char *cmdArgs = _strdup(cmd.c_str());
 
 
 	//some varaiable
@@ -69,61 +77,15 @@ bool Submission::Compile(string Direct[], string NewFolder, int count) {
 	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
 
 										 /*Compline and Run*/
-	if (CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
-		NULL, NULL, FALSE, 0, NULL,
-		NULL, &StartupInfo, &ProcessInfo));
-
-		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);
-		TerminateProcess(ProcessInfo.hProcess, 0);
-		return 1;
-	
-	
-}
-
-bool Submission::CompileAndRun(string Direct[],int count) {
-
-	/*Create new folder*/
-	string NewFolder = USER_FOLDER + ID + "\\Sub"+to_string(count+1)+"\\";
-	
-	/*Text file output*/
-	
-
-	/*Copy files to new folder*/
-	if(!CopyFiles(Direct, NewFolder ,count)) return 0;
-	if (!Compile(Direct, NewFolder, count)) return 0;
-
-	string CompileAndRuncmd;
-	for (int i = 0; i < TEST_NUMBER; i++) {
-		string outputFile = "test."+to_string(i+1)+".txt";
-		string cmd = NewFolder + "Output\\" + PROBLEM_NAME + ".exe <" + TESTCASE_FOLDER + "testcase" + to_string(i + 1) + ".txt" 
-			+ ">" +NewFolder + "Output\\" + outputFile + " && ";
-		CompileAndRuncmd += cmd;
-	}
-	
-	//convert to char
-	string cmd = "/k cd " + NewFolder + "&&" + NewFolder[0] + ":&&" +CompileAndRuncmd+"exit";
-	char *cmdArgs = string2char(cmd);
-
-	//some varaiable
-	PROCESS_INFORMATION ProcessInfo; //This is what we get as an [out] parameter
-	STARTUPINFOA StartupInfo; //This is an [in] parameter
-	ZeroMemory(&StartupInfo, sizeof(StartupInfo));
-	StartupInfo.cb = sizeof StartupInfo; //Only compulsory field
-
-	 /*Compline and Run*/
 	CreateProcessA("c:\\windows\\system32\\cmd.exe", cmdArgs,
 		NULL, NULL, FALSE, 0, NULL,
 		NULL, &StartupInfo, &ProcessInfo);
-	
-		WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);
-		//TerminateProcess(ProcessInfo.hProcess, 0);
-		return 1;
-	
 
+	WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+	CloseHandle(ProcessInfo.hThread);
+	CloseHandle(ProcessInfo.hProcess);
+	//TerminateProcess(ProcessInfo.hProcess, 0);
+	return true;
 }
 
 void Submission::setTime() {
@@ -290,12 +252,12 @@ void Submission::setpos(int pos) {
 bool Submission::Compare(string MSSV, int SubCount, int stt) {
 	string temp = "\\";
 	//Địa chỉ file tạo ra
-	string output = OUTPUT_FOLDER + temp + MSSV + temp + "Sub" + to_string(SubCount)
+	string output = USER_FOLDER + MSSV + temp + "Sub" + to_string(SubCount)
 		+ temp + "Output" + temp + "test." + to_string(stt) + ".txt";
 	//Địa chỉ file đáp án
 	string result = RESULT_FOLDER + temp + "result" + to_string(stt) + ".txt";
-	ifstream File1(output);
-	ifstream File2(result);
+	std::ifstream File1(output);
+	std::ifstream File2(result);
 	if (!File1.is_open()) {
 		cout << "Cannot open " << MSSV << "test." << stt << ".txt" << endl;
 		return false;
@@ -323,10 +285,10 @@ bool Submission::Compare(string MSSV, int SubCount, int stt) {
 void Submission::SaveScore(string MSSV, int SubCount) {
 	string temp = "\\";
 	//Địa chỉ của file output
-	string output = OUTPUT_FOLDER + temp + MSSV + temp + "Sub" + to_string(SubCount) + temp + "result.txt";
+	string output = USER_FOLDER + MSSV + temp + "Sub" + to_string(SubCount) + temp + "result.txt";
 	//Địa chỉ file trọng số 1 2 3 2 2
 	string weightFolder = RESULT_FOLDER + temp + "weight.txt";
-	ofstream result;
+	std::ofstream result;
 	result.open(output, ios::app);
 	double ScoreArray[TEST_NUMBER+1] = { 0.0 ,0.0 ,0.0 ,0.0, 0.0, 0.0 }; //Khởi tạo mảng lưu kết quả so sánh
 	for (int i = 1; i <= TEST_NUMBER; i++) {
@@ -336,7 +298,7 @@ void Submission::SaveScore(string MSSV, int SubCount) {
 		}
 		else result << 0 << " ";
 	}
-	ifstream weight;
+	std::ifstream weight;
 	weight.open(weightFolder, ios::in);
 	string parameter;
 	int i = 0;

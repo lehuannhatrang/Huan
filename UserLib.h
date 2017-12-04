@@ -1,8 +1,6 @@
 #pragma once
 #include"SubmissionLib.h"
-#include"tinyxml.h"
-#include<boost\filesystem.hpp>
-using namespace boost::filesystem;
+
 
 class User {
 private:

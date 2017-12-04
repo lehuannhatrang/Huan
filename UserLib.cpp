@@ -57,36 +57,38 @@ void User::set_ID(string ID) {
 
 /* Submit function */
 bool User::Submit() {
-	string direct[NUMBER_OF_FILE_SUB];
-		for (int i = 0; i < NUMBER_OF_FILE_SUB; i++) {
-			cout << "Nhap duong dan toi file " << i + 1 << ": ";
-			getline(cin >> ws, direct[i]);
-			std::fstream file;
-			file.open(direct[i], ios::in);
-			if (file.fail()) {
-				cout << "File doesn't existed!!" << endl;
-				return 0;
-			}
-			file.close();
-		}
+	string filePath;
+	cout << "Choose a directory: ";
+	getline(cin >> ws, filePath);
+	path p{ filePath.c_str() };
 
-		Submission submit(ID);
-		submit.setpos(SubmitCount + 1);
-		submit.setTime();
+	// Check input string is an exists directory or not. If not, return false
+	if (!exists(p)) {
+		cout << "Failed!!\n";
+		return false;
+	}
 
-		if (submit.CompileAndRun(direct, SubmitCount)) {
-			submissionsList->addSubmit(submit);
-			SubmitCount++;
-			submit.SaveScore(ID, SubmitCount);
-			submit.SaveData(SubmitCount);
-			GetHighScore();
-			SaveData();
-			return 1;
-		}
-		else {
-			cout << "false" << endl;
-			return 0;
-		}
+	// Create a object references to new submission
+	Submission newSubmit(ID);
+	newSubmit.setpos(SubmitCount + 1);
+	newSubmit.setTime();
+
+	if (newSubmit.CompileAndRun(filePath, SubmitCount)) {
+		// Add a submission into submission list
+		submissionsList->addSubmit(newSubmit);
+		SubmitCount++;
+		// Perform mark and save the score
+		newSubmit.SaveScore(ID, SubmitCount);
+		// This function saves only the data of the order-th submission into a XML file
+		newSubmit.SaveData(SubmitCount);
+		GetHighScore();//???????????????????
+		SaveData();
+		return 1;
+	}
+	else {
+		cout << "false" << endl;
+		return 0;
+	}
 	
 }
 
