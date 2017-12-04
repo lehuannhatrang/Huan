@@ -18,11 +18,10 @@ bool Submission::Compile(string NewFolder, int count) {
 	create_directories(OutputFolder.c_str());
 	/*Making Command Line*/
 	string CompileAndRuncmd =
-		"cd " + NewFolder + "&&" + NewFolder[0] + ":"
-		+ "&&g++ -c main.cpp -o " + NewFolder + "Output\\" + "main.o"
-		+ "&&g++ -c " + USER_COMPLINE_FILES_NAMES + " -o" + NewFolder + "Output\\" + "Calculate.o"
-		+ "&&g++ " + NewFolder + "Output\\" + "main.o " + NewFolder + "Output\\" + "Calculate.o " + "-o " + NewFolder + "Output\\" + PROBLEM_NAME
-		+ "&& exit";
+		"cd "+ string(VCVARS_DIRECTORY) +"&&" + VCVARS_DIRECTORY[0] + ":"
+		+"&&vcvarsall.bat"
+		"&&cd " + NewFolder + "&&" + NewFolder[0] + ":"
+		+ "&&nmake build"+ "&& exit";
 
 	//convert to char
 	string cmd = "/k " + CompileAndRuncmd;
@@ -47,8 +46,10 @@ bool Submission::Compile(string NewFolder, int count) {
 bool Submission::CompileAndRun(string filePath, int count) {
 	//Create new folder and Copy files from file Path to new folder
 	string NewFolder = USER_FOLDER + ID + "\\Sub" + to_string(count + 1) + "\\";
+	
 	bool copySuccess = CopyDir(filePath.c_str(), NewFolder.c_str());
-
+	copy_file(MAIN_DIRECT, (NewFolder+"main.cpp").c_str());
+	copy_file(MAKEFILE_DIRECTORY, (NewFolder + "makefile").c_str());
 	// Check if copy is success
 	if (copySuccess == false) return false;
 
@@ -290,6 +291,8 @@ void Submission::SaveScore(string MSSV, int SubCount) {
 	string weightFolder = RESULT_FOLDER + temp + "weight.txt";
 	std::ofstream result;
 	result.open(output, ios::app);
+	/*double *ScoreArray = new double[TEST_NUMBER + 1];
+	ScoreArray[5] = 0;*/
 	double ScoreArray[TEST_NUMBER+1] = { 0.0 ,0.0 ,0.0 ,0.0, 0.0, 0.0 }; //Khởi tạo mảng lưu kết quả so sánh
 	for (int i = 1; i <= TEST_NUMBER; i++) {
 		if (Compare(MSSV, SubCount, i)) {

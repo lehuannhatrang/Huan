@@ -1,4 +1,5 @@
-#pragma once
+#ifndef XMLPROCESS_H
+#define XMLPROCESS_H
 #include<iostream>
 #include"tinyxml2.h"
 #include<boost\filesystem.hpp>
@@ -24,3 +25,5 @@ int ExtractData(const char* XMLFile, const char* fileName,string& dataOut);
 // Copy all files in a directory into a new directory
 bool CopyDir(boost::filesystem::path const & source,
 	boost::filesystem::path const & destination);
+
+#endif

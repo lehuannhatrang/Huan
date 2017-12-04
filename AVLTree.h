@@ -1,4 +1,5 @@
-#pragma once
+#ifndef AVLTREE_H
+#define AVLTREE_H
 #include<iostream>
 #include<string>
 using namespace std;
@@ -299,4 +300,6 @@ public:
 	}
 	
 };
+
+#endif
 

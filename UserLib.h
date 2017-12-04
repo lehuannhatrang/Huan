@@ -1,4 +1,5 @@
-#pragma once
+#ifndef USERLIB_H
+#define USERLIB_H
 #include"SubmissionLib.h"
 
 
@@ -21,6 +22,6 @@ public:
 	bool SaveData();
 	float getScore();
 };
-
+#endif
 
 

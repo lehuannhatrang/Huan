@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MENULIB_H
+#define MENULIB_H
 #include"CommonLib.h"
 
 void MainMenu();
@@ -8,3 +9,5 @@ bool LoginMenu(string &ID);
 void ShowUserMenu();
 void ShowAdminMenu();
 void ShowMainMenu();
+
+#endif

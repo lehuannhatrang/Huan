@@ -1,16 +1,21 @@
-#pragma once
+
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
-#include<string>
+
+#ifndef SUBMISSION_H
+#define	 SUBMISSION_H
+
 #include<Windows.h>
 #include<iomanip>
-#include<fstream>
-#include"XMLProcess.h"
-#include"tinyxml.h"
 #include<stdlib.h>
 #include<time.h>
+#include<sstream>
 #include<boost\filesystem.hpp>
+#include"XMLProcess.h"
+#include"tinyxml.h"
+
+
 #define PROGRAM_FOLDER "D:\\ASSIGNMENT\\"
 #define USER_FOLDER "D:\\ASSIGNMENT\\USER\\"
 #define MAIN_DIRECT "D:\\ASSIGNMENT\\ADMIN\\Compline\\main.cpp"
@@ -18,8 +23,11 @@
 #define TESTCASE_FOLDER "D:\\ASSIGNMENT\\ADMIN\\Testcases\\"
 #define PROBLEM_NAME "Calculate"
 #define USER_COMPLINE_FILES_NAMES "CalculateLib.cpp"
-#define NUMBER_OF_FILE_SUB 2
 #define TEST_NUMBER 5
+#define MAKEFILE_DIRECTORY "D:\\ASSIGNMENT\\ADMIN\\Compline\\makefile"
+#define VCVARS_DIRECTORY "C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\"
+
+
 
 using namespace std;
 using namespace boost::filesystem;
@@ -71,3 +79,4 @@ public:
 };
 
 char* string2char(string str);
+#endif
